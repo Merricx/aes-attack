@@ -162,6 +162,8 @@ ctx_diff = remove_shift_rows(ctx_diff)
 
 possible_key = []
 
+# Perform differential against sbox
+# this is can be improved
 print("[+] Brute all possible byte using SBOX differential...")
 for i in range(16):
     possible_key.append([])
@@ -186,7 +188,7 @@ for i in range(16):
                     possible_key[i].append(j ^ plaintext[0][i])
 
 
-print("[+] Trying all possible key...")
+print("[+] Enumerate remaining possible key...")
 all_possible_key = product(
     possible_key[0],
     possible_key[1],
@@ -206,7 +208,7 @@ all_possible_key = product(
     possible_key[15]
 )
 
-# Naively enumerate all possible key and check if decryption results to equal plaintext
+# Enumerate all remaining possible key and check if decryption results to equal plaintext
 recovered_key = b''
 for possible_key in all_possible_key:
     check = decrypt(ciphertext[0], bytes(possible_key))
