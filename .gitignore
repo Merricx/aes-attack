@@ -1,0 +1,21 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+# Ignore .o
+*.o
+
+# Ignore .pyc
+*.pyc
+
+# Ignore folders
+data/
+__pycache__/
+
+# Except
+!data/.gitkeep
