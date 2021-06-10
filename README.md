@@ -37,7 +37,7 @@ With at least 2 plaintext-ciphertext pairs, this is just `plaintext -> SBOX -> c
 
 Attack: Impossible Differential  
 Model: Chosen-Plaintext Attack  
-Data: ~10 differential pairs (~5 plaintext-ciphertext pairs)  
+Data: 5 plaintext-ciphertext pairs  
 Time: `2**8`  
 
 Impossible differential attack based on SBOX Differential Distribution Table  
@@ -61,7 +61,7 @@ Implementation of Low Data Complexity attack by [Bouillaguet et al.](https://epr
   
 Attack: Impossible Differential  
 Model: Chosen-Plaintext Attack  
-Data: ~10 differential pairs (~20 plaintext-ciphertext pairs)  
+Data: 5 plaintext-ciphertext pairs  
 Time: `2**16`  
 
 This is the extension of `round2-impossible-diff.py` attack by adding 1 round at the beginning  
@@ -81,7 +81,7 @@ Model: Chosen-Plaintext Attack
 Data: 1 delta-set (256 chosen-plaintext) (more delta-set will be better)  
 Time: `2**8`  
 
-See amazing tutorial of Square Attack by David Wong on [https://www.davidwong.fr/blockbreakers/square.html]  
+See amazing tutorial of Square Attack by David Wong on https://www.davidwong.fr/blockbreakers/square.html  
 
 ### Full Round
 
