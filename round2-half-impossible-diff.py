@@ -158,9 +158,7 @@ possible_key = []
 for imp_key in impossible_key:
     possible_key.append(list(set(list_256) - set(imp_key)))
 
-all_possible_key = product(
-    possible_key[0], possible_key[1], possible_key[2], possible_key[3], possible_key[4], possible_key[5],possible_key[6], possible_key[7], possible_key[8],possible_key[9], possible_key[10], possible_key[11],possible_key[12], possible_key[13], possible_key[14],possible_key[15]
-    )
+all_possible_key = product(*possible_key)
 
 # Enumerate all remaining possible_key
 ciphertext_check = ciphertext1

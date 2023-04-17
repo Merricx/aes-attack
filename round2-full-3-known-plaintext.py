@@ -49,7 +49,7 @@ print("[+] Generate random 3 known-plaintext ciphertext pairs...")
 generate_random_plaintext_ciphertext_pair()
 
 # Running our attack on round2-full-3-known-plaintext
-print("[+] Running Attack in subshell...")
+print("[+] Running Attack in subprocess...")
 os.system("./round2-full-3-known-plaintext data/p1.bin data/p2.bin data/p3.bin data/c1.bin data/c2.bin data/c3.bin")
 
 # We get our Round Key 1 in data/output.bin

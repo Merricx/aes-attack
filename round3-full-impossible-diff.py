@@ -8,11 +8,25 @@ KEY = os.urandom(16)
 
 def encrypt(plaintext):
     aes = AES(KEY, 3)
-    return aes.encrypt_block(plaintext)
+    key_expand = aes._key_matrices
+
+    state = aes.encrypt_block(plaintext)
+    state = bytes2matrix(state)
+    add_round_key(state, key_expand[-1])
+    mix_columns(state)
+    add_round_key(state, key_expand[-1])
+    
+    return matrix2bytes(state)
 
 def decrypt(ciphertext, key):
     aes = AES(key, 3)
-    return aes.decrypt_block(ciphertext)
+    key_expand = aes._key_matrices
+    state = bytes2matrix(ciphertext)
+    add_round_key(state, key_expand[-1])
+    inv_mix_columns(state)
+    add_round_key(state, key_expand[-1])
+
+    return aes.decrypt_block(matrix2bytes(state))
 
 def generate_sbox_different_distribution_table():
     table = {}
@@ -32,9 +46,16 @@ def generate_sbox_different_distribution_table():
 def inv_last_round(s, k):
     state = bytes2matrix(s)
     round_key = bytes2matrix(k)
+    inv_mix_columns(state)
     add_round_key(state, round_key)
     inv_shift_rows(state)
     inv_sub_bytes(state)
+
+    return matrix2bytes(state)
+
+def mix_columns_key(round_key):
+    state = bytes2matrix(round_key)
+    mix_columns(state)
 
     return matrix2bytes(state)
 
@@ -118,7 +139,7 @@ test_pair = generate_sample_pair()
 impossible_key = [None] * 256
 possible_rk0 = -1
 for x in range(256):
-    print('[+] Testing Rk0 = '+str(x))
+    print('[*] Testing Rk0 = '+str(x))
     impossible_key[x] = [None] * 16
 
     for p1, p2, c1, c2 in test_pair:
@@ -147,7 +168,7 @@ for x in range(256):
                 if j in impossible_key[x][i]:
                     continue
 
-                # Inverse ciphertext to start of round 3 (ciphertext -> AddRoundKey -> InvShiftRows -> InvSubBytes)
+                # Inverse ciphertext to start of round 3 (ciphertext -> InvMixColumns -> AddRoundKey -> InvShiftRows -> InvSubBytes)
                 guess_key = b'\x00'*(i) + bytes([j]) + b'\x00'*(15-i)
                 inv_a = inv_last_round(ciphertext_a, guess_key)
                 inv_b = inv_last_round(ciphertext_b, guess_key)
@@ -174,15 +195,14 @@ possible_key = []
 for imp_key in impossible_key[possible_rk0]:
     possible_key.append(list(set(list_256) - set(imp_key)))
     
-all_possible_key = product(
-    possible_key[0], possible_key[1], possible_key[2], possible_key[3], possible_key[4], possible_key[5],possible_key[6], possible_key[7], possible_key[8],possible_key[9], possible_key[10], possible_key[11],possible_key[12], possible_key[13], possible_key[14],possible_key[15]
-    )
+all_possible_key = product(*possible_key)
 
 # Enumerate all remaining possible_key
 ciphertext_check = test_pair[0][2]
 for possible_round_key in all_possible_key:
     
-    master_key = inv_key_expansion(list(possible_round_key), 3)
+    mixed_key = mix_columns_key(possible_round_key)
+    master_key = inv_key_expansion(list(mixed_key), 3)
     
     decrypt_check = decrypt(ciphertext_check, master_key)
     if decrypt_check == test_pair[0][0]:

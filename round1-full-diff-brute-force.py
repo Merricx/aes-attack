@@ -5,21 +5,34 @@ from utils import *
 
 KEY = os.urandom(16)
 
-# 1-round AES Encryption 
+# 1-round AES Encryption (including last MixColumns)
 def encrypt(plaintext):
     aes = AES(KEY, 1)
+    key_expand = aes._key_matrices
+
+    state = aes.encrypt_block(plaintext)
+    state = bytes2matrix(state)
+    add_round_key(state, key_expand[-1])
+    mix_columns(state)
+    add_round_key(state, key_expand[-1])
     
-    return aes.encrypt_block(plaintext)
+    return matrix2bytes(state)
 
 # Decryption check
 def decrypt(ciphertext, key):
     aes = AES(key, 1)
-    
-    return aes.decrypt_block(ciphertext)
+    key_expand = aes._key_matrices
+    state = bytes2matrix(ciphertext)
+    add_round_key(state, key_expand[-1])
+    inv_mix_columns(state)
+    add_round_key(state, key_expand[-1])
 
-# InvShiftRows of ciphertext differential
-def remove_shift_rows(s):
+    return aes.decrypt_block(matrix2bytes(state))
+
+# InvMixColumns -> InvShiftRows of ciphertext differential
+def inv_last_round(s):
     state = bytes2matrix(s)
+    inv_mix_columns(state)
     inv_shift_rows(state)
 
     return matrix2bytes(state)
@@ -48,7 +61,7 @@ if 0 in ptx_diff:
 
 # Apply InvShiftRows on ciphertext differential
 # If FULL ROUND is used (MixColumns used on last round), we can also apply InvMixColumns before InvShiftRows
-ctx_diff = remove_shift_rows(ctx_diff)
+ctx_diff = inv_last_round(ctx_diff)
 
 possible_key = []
 
@@ -79,24 +92,7 @@ for i in range(16):
 
 
 print("[+] Enumerate remaining possible key...")
-all_possible_key = product(
-    possible_key[0],
-    possible_key[1],
-    possible_key[2],
-    possible_key[3],
-    possible_key[4],
-    possible_key[5],
-    possible_key[6],
-    possible_key[7],
-    possible_key[8],
-    possible_key[9],
-    possible_key[10],
-    possible_key[11],
-    possible_key[12],
-    possible_key[13],
-    possible_key[14],
-    possible_key[15]
-)
+all_possible_key = product(*possible_key)
 
 # Enumerate all remaining possible key and check if decryption results to equal plaintext
 recovered_key = b''
