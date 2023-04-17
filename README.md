@@ -108,7 +108,7 @@ This is just modified version of `round3-half-impossible-diff.py` in full 3-roun
 
 ### Half Round
 
-#### `round4-square.py`
+#### `round4-half-square.py`
   
 Attack: Square  
 Model: Chosen-Plaintext Attack  
