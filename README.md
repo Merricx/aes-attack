@@ -40,10 +40,10 @@ Similar with previous attack, but slightly optimized to use S-Box DDT lookup ins
 
 #### `round1-full-one-known-plaintext.py`
 
-Attack: Key schedule relation
+Attack: Key schedule relation  
 Model: Known-Plaintext Attack  
-Data: 1 plaintext-ciphertext pair
-Time: `2**40` (`2**16` in PoC)
+Data: 1 plaintext-ciphertext pair  
+Time: `2**40` (`2**16` in PoC)  
 
 Implementation of Low Data Complexity attack by [Bouillaguet et al.](https://eprint.iacr.org/2010/633.pdf) with only 1 known plaintext-ciphertext pair.
 
